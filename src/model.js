@@ -51,8 +51,8 @@ class Model {
     list.push(newRow)
 
     const string = JSON.stringify(list)
-
-    await redis.set(key, string)
+    // set transaction to avoid duplicate keys while write at the same time
+    await redis.multi().set(key, string).exec()
 
     return newRow
   }
@@ -77,7 +77,7 @@ class Model {
 
     const string = JSON.stringify(result)
 
-    await redis.set(key, string)
+    await redis.multi().set(key, string).exec()
   }
 
   async removeGenerator () {
